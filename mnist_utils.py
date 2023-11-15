@@ -268,7 +268,7 @@ class CNNModel(nn.Module):
 
 
 def initial_model(conf):
-    model = create_model(conf).to(torch.device("cpu"))
+    model = create_model(conf).to(torch.device("cuda"))
     model_param = {}
     for name, p in model.named_parameters():
         model_param[name] = p

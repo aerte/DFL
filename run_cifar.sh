@@ -20,15 +20,15 @@ echo -e "Working dir: $(pwd)\n"
 
 
 lr_group="0.1"
-n_clients=2
-split=non_iid
+n_clients=4
+split=iid
 local_epoch=10
 method=check_zeta
-non_iid_alpha=0.1
+non_iid_alpha=0
 dataset=cifar10
 model_type=m_cnn
-version=2
-num_rounds=1
+version=1
+num_rounds=10
 sigma=0
 start_round=0
 start_client=0

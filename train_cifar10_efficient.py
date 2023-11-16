@@ -14,8 +14,10 @@ import time
 import configs
 import pickle
 import get_subset_cifar10 as gsc
+import wandb
+import pandas as pd
 
-device = torch.device("cuda")
+device = torch.device("cpu")
 
 
 class Train(object):
@@ -71,6 +73,7 @@ class Train(object):
             _accu = (_pred.argmax(axis=-1) == _label).sum()
             val_loss += _loss.detach().cpu().numpy()
             val_accu += _accu.detach().cpu().numpy()
+
         print("{} loss: {:.4f} and {} accuracy {:.2f}".format(str_use, val_loss / len(data_use) / len(_image),
                                                               str_use, val_accu / len(data_use) / len(_image)))
         return val_loss, val_accu / len(data_use) / len(_image)
@@ -116,15 +119,31 @@ def run_server(conf):
         except EOFError:
             print("Having problems loading model parameters")
             return 0.0
+
+        # Export data
+        _, _, predictions, _, _ = check_test_accuracy(_model_param, conf)
+
+        df = pd.DataFrame(predictions)
+        name = ("Client_%02d_" % i)
+        wandb.log({name: df})
+
+
         if i == 0:
             for k in _model_param.keys():
                 model_group[k] = _model_param[k] * (1 / conf.n_clients)
+
         else:
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, _, labels, indices = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
+
+    # Export data
+    df1 = pd.DataFrame(labels)
+    df2 = pd.DataFrame(indices)
+    wandb.log({'true_and_pred': pd.concat([df1, df2], axis = 1, ignore_index=True)})
+
     return tt_loss, tt_accu
 
 
@@ -134,17 +153,33 @@ def check_test_accuracy(model_checkpoints, conf):
     model_use = mnist_utils.create_model(conf).to(device)
     model_use.load_state_dict(model_checkpoints)
     loss, accu = 0.0, 0.0
+
+    # create list for uncertainty estimating information
+    preds = []
+    indices = []
+    labels = []
+
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
+
         _loss = nn.CrossEntropyLoss(reduction='sum')(_pred, _la) / len(_im)
         _accu = (_pred.argmax(axis=-1) == _la).sum()
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
+
+        # Record relevant information
+        for e in range(_pred.shape[0]):
+            preds.append(_pred[e,:].detach().numpy())
+            labels.append(_la[e].detach().numpy())
+            _index = _pred[e,:].argmax(axis=-1)
+            indices.append(_index.detach().numpy())
+
+
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu
+    return loss, accu, np.array(preds), np.array(labels), np.array(indices)
 
 
 def train_with_conf(conf):
@@ -154,6 +189,17 @@ def train_with_conf(conf):
     conf.dir_name = "version_0"
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
+
+    wandb.init(
+        # set the wandb project where this run will be logged
+        project="test-run-cifar_Version%01d" % conf.version ,
+
+        # track hyperparameters and run metadata
+        config={
+            "rounds": 5,
+            "dataset": "CIFAR"
+        }
+    )
 
     stat_use = model_dir + "/stat.obj"
     if os.path.exists(stat_use):

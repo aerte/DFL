@@ -17,6 +17,8 @@ import get_subset_cifar10 as gsc
 
 mnist_path = "../image_dataset/"
 
+device = torch.device("cpu")
+
 
 def get_mnist_transform():
     normalize = (
@@ -160,10 +162,10 @@ def load_tt_im():
 
 
 def seed_everything(seed):
-    random.seed(seed)
+    random.seed(int(seed))
     os.environ['PYTHONHASHSEED'] = str(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
+    np.random.seed(int(seed))
+    torch.manual_seed(int(seed))
 
 
 class GetData(object):
@@ -268,7 +270,7 @@ class CNNModel(nn.Module):
 
 
 def initial_model(conf):
-    model = create_model(conf).to(torch.device("cuda"))
+    model = create_model(conf).to(device)
     model_param = {}
     for name, p in model.named_parameters():
         model_param[name] = p
@@ -329,6 +331,6 @@ if __name__ == "__main__":
         create_dir(conf)
     elif conf.dataset == "cifar10":
         conf = create_cifar10_dir(conf)
-        seed_use = np.random.randint(0, 100000, 1)[0]
+        seed_use = int(np.random.randint(0, 100000, 1)[0])
         conf.random_state = np.random.RandomState(seed_use)
         tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)

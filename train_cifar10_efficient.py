@@ -108,12 +108,15 @@ def run_train(conf, tr_loader, tt_loader, exist_model):
     return client_model
 
 
-def run_server(conf):
+def run_server(conf, model_path):
+
     time_init = time.time()
     model_group = {}
     dir2load = conf.model_dir
     print("starting to calculate the aggregated model")
     for i in range(conf.n_clients):
+        name_round =
+        if not os.path.exists()
         try:
             _model_param = torch.load(dir2load + "/client_id_%02d.pt" % i, map_location=device)
         except EOFError:
@@ -125,7 +128,8 @@ def run_server(conf):
 
         df = pd.DataFrame(predictions)
         name = ("Client_%02d_" % i)
-        wandb.log({name: df})
+        #wandb.log({name: df})
+        df.to_csv(model_path+name, index = False)
 
 
         if i == 0:
@@ -142,7 +146,10 @@ def run_server(conf):
     # Export data
     df1 = pd.DataFrame(labels)
     df2 = pd.DataFrame(indices)
-    wandb.log({'true_and_pred': pd.concat([df1, df2], axis = 1, ignore_index=True)})
+    dft = pd.concat([df1, df2], axis = 1, ignore_index=True)
+    name = 'true_and_pred'
+    #wandb.log({'true_and_pred': pd.concat([df1, df2], axis = 1, ignore_index=True)})
+    dft.to_csv(model_path+name, index = False)
 
     return tt_loss, tt_accu
 
@@ -201,6 +208,7 @@ def train_with_conf(conf):
         }
     )
 
+
     stat_use = model_dir + "/stat.obj"
     if os.path.exists(stat_use):
         if conf.use_local_id == 0:
@@ -253,7 +261,7 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf)
+                tt_loss, tt_accu = run_server(conf, model_path)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 

@@ -26,7 +26,7 @@
 
 nvidia-smi
 module load python3/3.9.11
-source ../torch_dl/bin/activate
+source ~/torch_dl/bin/activate
 module load numpy/1.22.3-python-3.9.11-openblas-0.3.19
 module load scipy/1.7.3-python-3.9.11
 

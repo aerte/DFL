@@ -170,10 +170,10 @@ def check_test_accuracy(model_checkpoints, conf):
 
         # Record relevant information
         for e in range(_pred.shape[0]):
-            preds.append(_pred[e,:].detach().numpy())
-            labels.append(_la[e].detach().numpy())
+            preds.append(_pred[e,:].detach().cpu().numpy())
+            labels.append(_la[e].detach().cpu().numpy())
             _index = _pred[e,:].argmax(axis=-1)
-            indices.append(_index.detach().numpy())
+            indices.append(_index.detach().cpu().numpy())
 
 
     loss = loss / len(tt_loader)
@@ -256,6 +256,11 @@ def train_with_conf(conf):
                 tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
+
+                wandb.log({'server_loss':tt_loss})
+                wandb.log({'server_accuracy': tt_accu})
+
+
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
                 print("Finish getting the server model at round", conf.round)

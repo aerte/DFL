@@ -24,11 +24,12 @@
 #BSUB -e cifar_%J.err
 # -- end of LSF options --
 
+# Update for python 3.9.17
 nvidia-smi
-module load python3/3.9.11
-module load numpy/1.22.3-python-3.9.11-openblas-0.3.19
-module load scipy/1.7.3-python-3.9.11
-module load pandas/1.4.1-python-3.9.11
+module load python3/3.9.17
+module load numpy/1.22.3-python-3.9.17-openblas-0.3.19
+module load scipy/1.7.3-python-3.9.17
+module load pandas/1.4.1-python-3.9.17
 source ~/torch_dl/bin/activate
 
 ./run_cifar.sh

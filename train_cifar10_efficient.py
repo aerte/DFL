@@ -15,7 +15,6 @@ import configs
 import pickle
 import get_subset_cifar10 as gsc
 import wandb
-import pandas as pd
 
 device = torch.device("cuda")
 
@@ -73,7 +72,6 @@ class Train(object):
             _accu = (_pred.argmax(axis=-1) == _label).sum()
             val_loss += _loss.detach().cpu().numpy()
             val_accu += _accu.detach().cpu().numpy()
-
         print("{} loss: {:.4f} and {} accuracy {:.2f}".format(str_use, val_loss / len(data_use) / len(_image),
                                                               str_use, val_accu / len(data_use) / len(_image)))
         return val_loss, val_accu / len(data_use) / len(_image)
@@ -108,8 +106,7 @@ def run_train(conf, tr_loader, tt_loader, exist_model):
     return client_model
 
 
-def run_server(conf, model_path):
-
+def run_server(conf):
     time_init = time.time()
     model_group = {}
     dir2load = conf.model_dir
@@ -120,35 +117,15 @@ def run_server(conf, model_path):
         except EOFError:
             print("Having problems loading model parameters")
             return 0.0
-
-        # Export data
-        _, _, predictions = check_test_accuracy(_model_param, conf)
-
-        df = pd.DataFrame(predictions)
-        name = ("Client_%02d_" % i)
-        #wandb.log({name: df})
-        df.to_csv(model_path+name, index = False)
-
-
         if i == 0:
             for k in _model_param.keys():
                 model_group[k] = _model_param[k] * (1 / conf.n_clients)
-
         else:
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, _, = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
-
-    # Export data
-    #df1 = pd.DataFrame(labels)
-    #df2 = pd.DataFrame(indices)
-    #dft = pd.concat([df1, df2], axis = 1, ignore_index=True)
-    #name = 'true_and_pred'
-    #wandb.log({'true_and_pred': pd.concat([df1, df2], axis = 1, ignore_index=True)})
-    #dft.to_csv(model_path+name, index = False)
-
     return tt_loss, tt_accu
 
 
@@ -158,36 +135,21 @@ def check_test_accuracy(model_checkpoints, conf):
     model_use = mnist_utils.create_model(conf).to(device)
     model_use.load_state_dict(model_checkpoints)
     loss, accu = 0.0, 0.0
-
-    # create list for uncertainty estimating information
-    #preds = []
-    #indices = []
-    #labels = []
-
-    preds = np.zeros([len(tt_loader) * 1000, 10])
+    num_class = 10
+    preds = np.zeros([len(tt_loader) * 1000, num_class])
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
-
         _loss = nn.CrossEntropyLoss(reduction='sum')(_pred, _la) / len(_im)
         _accu = (_pred.argmax(axis=-1) == _la).sum()
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
-
-        # Record relevant information
-        #for e in range(_pred.shape[0]):
-        #    preds.append(_pred[e,:].detach().cpu().numpy())
-        #    labels.append(_la[e].detach().cpu().numpy())
-        #    _index = _pred[e,:].argmax(axis=-1)
-        #    indices.append(_index.detach().cpu().numpy())
-
         preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
-
-
+    print("The shape of the prediction", np.shape(preds))
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu, preds #, np.array(labels), np.array(indices)
+    return loss, accu
 
 
 def train_with_conf(conf):
@@ -196,11 +158,9 @@ def train_with_conf(conf):
     conf.folder_name = "cifar10"
     conf.dir_name = "version_0"
 
-    model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
-
     wandb.init(
         # set the wandb project where this run will be logged
-        project="test-run-cifar_Version%01d" % conf.version ,
+        project="test-run-cifar_Version%01d" % conf.version,
 
         # track hyperparameters and run metadata
         config={
@@ -209,6 +169,7 @@ def train_with_conf(conf):
         }
     )
 
+    model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
     stat_use = model_dir + "/stat.obj"
     if os.path.exists(stat_use):
@@ -262,13 +223,12 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf, model_path)
+                tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
-                wandb.log({'server_loss':tt_loss})
+                wandb.log({'server_loss': tt_loss})
                 wandb.log({'server_accuracy': tt_accu})
-
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)

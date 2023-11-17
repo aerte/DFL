@@ -115,8 +115,6 @@ def run_server(conf, model_path):
     dir2load = conf.model_dir
     print("starting to calculate the aggregated model")
     for i in range(conf.n_clients):
-        name_round =
-        if not os.path.exists()
         try:
             _model_param = torch.load(dir2load + "/client_id_%02d.pt" % i, map_location=device)
         except EOFError:

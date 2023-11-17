@@ -17,8 +17,6 @@ import get_subset_cifar10 as gsc
 
 mnist_path = "../image_dataset/"
 
-device = torch.device("cuda")
-
 
 def get_mnist_transform():
     normalize = (
@@ -270,7 +268,7 @@ class CNNModel(nn.Module):
 
 
 def initial_model(conf):
-    model = create_model(conf).to(device)
+    model = create_model(conf).to("cuda")
     model_param = {}
     for name, p in model.named_parameters():
         model_param[name] = p

@@ -122,7 +122,7 @@ def run_server(conf, model_path):
             return 0.0
 
         # Export data
-        _, _, predictions, _, _ = check_test_accuracy(_model_param, conf)
+        _, _, predictions = check_test_accuracy(_model_param, conf)
 
         df = pd.DataFrame(predictions)
         name = ("Client_%02d_" % i)
@@ -138,16 +138,16 @@ def run_server(conf, model_path):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, _, labels, indices = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, _, = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
 
     # Export data
-    df1 = pd.DataFrame(labels)
-    df2 = pd.DataFrame(indices)
-    dft = pd.concat([df1, df2], axis = 1, ignore_index=True)
-    name = 'true_and_pred'
+    #df1 = pd.DataFrame(labels)
+    #df2 = pd.DataFrame(indices)
+    #dft = pd.concat([df1, df2], axis = 1, ignore_index=True)
+    #name = 'true_and_pred'
     #wandb.log({'true_and_pred': pd.concat([df1, df2], axis = 1, ignore_index=True)})
-    dft.to_csv(model_path+name, index = False)
+    #dft.to_csv(model_path+name, index = False)
 
     return tt_loss, tt_accu
 
@@ -160,10 +160,11 @@ def check_test_accuracy(model_checkpoints, conf):
     loss, accu = 0.0, 0.0
 
     # create list for uncertainty estimating information
-    preds = []
-    indices = []
-    labels = []
+    #preds = []
+    #indices = []
+    #labels = []
 
+    preds = np.zeros([len(tt_loader) * 1000, 10])
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
@@ -174,17 +175,19 @@ def check_test_accuracy(model_checkpoints, conf):
         accu += _accu.detach().cpu().numpy()
 
         # Record relevant information
-        for e in range(_pred.shape[0]):
-            preds.append(_pred[e,:].detach().cpu().numpy())
-            labels.append(_la[e].detach().cpu().numpy())
-            _index = _pred[e,:].argmax(axis=-1)
-            indices.append(_index.detach().cpu().numpy())
+        #for e in range(_pred.shape[0]):
+        #    preds.append(_pred[e,:].detach().cpu().numpy())
+        #    labels.append(_la[e].detach().cpu().numpy())
+        #    _index = _pred[e,:].argmax(axis=-1)
+        #    indices.append(_index.detach().cpu().numpy())
+
+        preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
 
 
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu, np.array(preds), np.array(labels), np.array(indices)
+    return loss, accu, preds #, np.array(labels), np.array(indices)
 
 
 def train_with_conf(conf):

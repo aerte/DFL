@@ -27,7 +27,7 @@ method=check_zeta
 non_iid_alpha=0.1
 dataset=cifar10
 model_type=m_cnn
-version=2
+version=9
 num_rounds=1
 sigma=0
 start_round=0
@@ -38,6 +38,8 @@ num2=3
 num3=6
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
+
+wandb login 2ceadd0580b10f2a10e2eaf5b14e25d184ec914c
 
 for s_lr in $lr_group
 do

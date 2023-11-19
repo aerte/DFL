@@ -1,7 +1,7 @@
 #!/bin/sh
 ### General options
 ### –- specify queue --
-#BSUB -q gpuv100
+#BSUB -q gpua100
 ### -- set the job Name --
 #BSUB -J cifar10
 ### -- ask for number of cores (default: 1) --
@@ -9,7 +9,7 @@
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 00:30
+#BSUB -W 2:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
 ### -- set the email address --
@@ -24,9 +24,8 @@
 #BSUB -e cifar_%J.err
 # -- end of LSF options --
 
-# Update for python 3.9.17
 nvidia-smi
-module load python3/3.9.17 numpy/1.24.3-python-3.9.17-openblas-0.3.23 scipy/1.7.3-python-3.9.17 pandas/2.0.2-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17
-source ~/torch_dl/bin/activate
+module load scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17 pandas/2.0.2-python-3.9.17
+source ../torch_dl/bin/activate
 
 ./run_cifar.sh

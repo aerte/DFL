@@ -36,7 +36,7 @@ class Train(object):
         print("Training data size", len(self.tr_data_loader))
         print("Testing data size", len(self.tt_data_loader))
 
-        parameter_list = [p for p in self.model_use.parameters() if p.requires_grad == True]
+        parameter_list = [p for p in self.model_use.parameters() if p.requires_grad == False]
         assert len(parameter_list) == 0
 
     def get_grad(self):
@@ -243,7 +243,6 @@ if __name__ == "__main__":
         for arg in vars(conf):
             print(arg, getattr(conf, arg))
     train_with_conf(conf)
-
 
 
 

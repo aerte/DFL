@@ -9,7 +9,7 @@ trap 'kill $(jobs -p)' EXIT
 # #SBATCH --nodes=1
 # #SBATCH --ntasks=10
 # #SBATCH --gres=gpu:3
-# #SBATCH --mail-user=s204797@student.stu.dk
+# #SBATCH --mail-user=blia@dtu.dk
 # #SBATCH --mail-type=END,FAIL
 # #SBATCH --export=ALL
 # FD
@@ -27,8 +27,8 @@ method=check_zeta
 non_iid_alpha=0.1
 dataset=cifar10
 model_type=m_cnn
-version=0
-num_rounds=5
+version=2
+num_rounds=1
 sigma=0
 start_round=0
 start_client=0
@@ -38,8 +38,6 @@ num2=3
 num3=6
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
-
-wandb login 2ceadd0580b10f2a10e2eaf5b14e25d184ec914c
 
 for s_lr in $lr_group
 do

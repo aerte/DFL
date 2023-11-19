@@ -216,19 +216,19 @@ def train_with_conf(conf):
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
-                wandb.log({'server_loss': tt_loss})
-                wandb.log({'server_accuracy': tt_accu})
-
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
                 print("Finish getting the server model at round", conf.round)
                 break
             else:
                 break
+
     del exist_model
     del _model
     if conf.round >= 4 and conf.use_local_id == 0:
         path2remove(model_dir + "/communication_round_%03d/" % (conf.round - 4))
+
+    return content["server_loss"], content["server_accu"]
 
 
 def path2remove(model_dir):
@@ -258,7 +258,10 @@ if __name__ == "__main__":
             "dataset": "CIFAR"
         }
     )
-    train_with_conf(conf)
+    loss, accu = train_with_conf(conf)
+
+    wandb.log({'val': {'server_loss': loss}})
+    wandb.log({'val': {'server_accuracy': accu}})
 
 
 

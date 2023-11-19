@@ -207,6 +207,7 @@ def get_dataloader(im, label, shuffle=True, batch_size=None):
 
 
 def create_model(conf):
+    print("MODEL THAT IS BEING USED: "+conf.model_type)
     num_input = 28 * 28 if conf.dataset == "mnist" else 3 * 32 * 32
     num_class = 10
     num_channel = 1 if conf.dataset == "mnist" else 3

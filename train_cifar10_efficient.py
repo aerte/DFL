@@ -124,8 +124,11 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, _ , taf = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
+
+
+
     return tt_loss, tt_accu
 
 
@@ -137,6 +140,8 @@ def check_test_accuracy(model_checkpoints, conf):
     loss, accu = 0.0, 0.0
     num_class = 10
     preds = np.zeros([len(tt_loader) * 1000, num_class])
+    taf = np.zeros([len(tt_loader) * 1000, 2])
+
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
@@ -145,11 +150,14 @@ def check_test_accuracy(model_checkpoints, conf):
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
         preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000,0] = _la.detach.cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000, 1] = _pred.argmax(axis=-1).detach.cpu().numpy()
+
     print("The shape of the prediction", np.shape(preds))
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu
+    return loss, accu, preds, taf
 
 
 def train_with_conf(conf):
@@ -260,8 +268,8 @@ if __name__ == "__main__":
     )
     loss, accu = train_with_conf(conf)
 
-    wandb.log({'val': {'server_loss': loss}})
-    wandb.log({'val': {'server_accuracy': accu}})
+    wandb.log({'server_loss': loss}, {'steps':conf.num_rounds})
+    wandb.log({'server_accuracy': accu}, {'steps':conf.num_rounds})
 
 
 

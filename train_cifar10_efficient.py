@@ -14,7 +14,6 @@ import time
 import configs
 import pickle
 import get_subset_cifar10 as gsc
-import wandb
 
 device = torch.device("cuda")
 
@@ -158,17 +157,6 @@ def train_with_conf(conf):
     conf.folder_name = "cifar10"
     conf.dir_name = "version_0"
 
-    wandb.init(
-        # set the wandb project where this run will be logged
-        project="test-run-cifar_Version%01d" % conf.version,
-
-        # track hyperparameters and run metadata
-        config={
-            "rounds": 5,
-            "dataset": "CIFAR"
-        }
-    )
-
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
     stat_use = model_dir + "/stat.obj"
@@ -226,10 +214,6 @@ def train_with_conf(conf):
                 tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
-
-                wandb.log({'server_loss': tt_loss})
-                wandb.log({'server_accuracy': tt_accu})
-
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
                 print("Finish getting the server model at round", conf.round)
@@ -259,3 +243,10 @@ if __name__ == "__main__":
         for arg in vars(conf):
             print(arg, getattr(conf, arg))
     train_with_conf(conf)
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+  wandb.init(
+        # set the wandb project where this run will be logged
+        project="test-run-cifar_Version%01d" % conf.version,
+
+        # track hyperparameters and run metadata
+        config={
+            "rounds": 5,
+            "dataset": "CIFAR"
+        }
+    )
+
+
+                wandb.log({'server_loss': tt_loss})
+                wandb.log({'server_accuracy': tt_accu})

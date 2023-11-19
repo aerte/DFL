@@ -268,8 +268,8 @@ if __name__ == "__main__":
     )
     loss, accu = train_with_conf(conf)
 
-    wandb.log({'server_loss': loss}, {'steps':conf.num_rounds})
-    wandb.log({'server_accuracy': accu}, {'steps':conf.num_rounds})
+    wandb.log({'server_loss': loss}, {'steps':np.arange(conf.num_rounds)})
+    wandb.log({'server_accuracy': accu}, {'steps':np.arange(conf.num_rounds)})
 
 
 

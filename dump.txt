@@ -19,3 +19,10 @@ data has to evaluate the data and save it in a specific round
 
 Save prediction in run_train
 save server in
+
+   #### Logging Data and recording labels + server prediction
+
+                wandb.log({'server_loss': tt_loss})
+                wandb.log({'server_accuracy': tt_accu})
+
+                ####

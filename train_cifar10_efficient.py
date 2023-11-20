@@ -14,8 +14,6 @@ import time
 import configs
 import pickle
 import get_subset_cifar10 as gsc
-import wandb
-from numpy import savetxt
 
 device = torch.device("cuda")
 
@@ -89,7 +87,7 @@ class Train(object):
         return self.model_use.state_dict()
 
 
-def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
+def run_train(conf, tr_loader, tt_loader, exist_model):
     """
     model_dir: ../exp_data/../communication_round_%02d/
     """
@@ -101,14 +99,13 @@ def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
 
     train_obj = Train(conf, [tr_loader, tt_loader], conf.num_local_epochs, conf.sigma, exist_model)
     client_model = train_obj.run()
-
     print("Done Local ID %02d" % conf.use_local_id)
     torch.save(client_model,
                conf.model_dir + "/client_id_%02d.pt" % conf.use_local_id)
     return client_model
 
 
-def run_server(conf, model_path):
+def run_server(conf):
     time_init = time.time()
     model_group = {}
     dir2load = conf.model_dir
@@ -126,17 +123,8 @@ def run_server(conf, model_path):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, _ , taf = check_test_accuracy(model_group, conf)
-
-    # df = pd.DataFrame(taf)
-    savetxt(model_path + "taf.csv", taf, delimiter=',')
-
-    ### SAVE SERVER PREDICTIONS HERE
-
+    tt_loss, tt_accu = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
-
-
-
     return tt_loss, tt_accu
 
 
@@ -148,8 +136,6 @@ def check_test_accuracy(model_checkpoints, conf):
     loss, accu = 0.0, 0.0
     num_class = 10
     preds = np.zeros([len(tt_loader) * 1000, num_class])
-    taf = np.zeros([len(tt_loader) * 1000, 2])
-
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
@@ -158,21 +144,18 @@ def check_test_accuracy(model_checkpoints, conf):
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
         preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
-        taf[i * 1000:(i + 1) * 1000,0] = _la.detach().cpu().numpy()
-        taf[i * 1000:(i + 1) * 1000, 1] = _pred.argmax(axis=-1).detach().cpu().numpy()
-
     print("The shape of the prediction", np.shape(preds))
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu, preds, taf
+    return loss, accu
 
 
 def train_with_conf(conf):
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_%02d" % conf.version
+    conf.dir_name = "version_0"
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
@@ -218,7 +201,7 @@ def train_with_conf(conf):
             return []
     time_init = time.time()
     _model = run_train(conf, tr_loader, tt_loader,
-                       exist_model, model_path)
+                       exist_model)
 
     print("finish training model time", time.time() - time_init)
 
@@ -228,37 +211,19 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf, model_path)
+                tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
-
-                #### Logging Data and recording labels + server prediction
-
-                wandb.log({'server_loss': tt_loss})
-                wandb.log({'server_accuracy': tt_accu})
-
-                ####
-
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
                 print("Finish getting the server model at round", conf.round)
                 break
             else:
                 break
-
-    #### Predictions and saving them
-    _, _, preds, _ = check_test_accuracy(_model, conf)
-    # df = pd.DataFrame(preds)
-    name = "client%02d.csv" % conf.use_local_id
-    savetxt(model_path + name, preds, delimiter=',')
-    ####
-
     del exist_model
     del _model
     if conf.round >= 4 and conf.use_local_id == 0:
         path2remove(model_dir + "/communication_round_%03d/" % (conf.round - 4))
-
-    #return content["server_loss"], content["server_accu"]
 
 
 def path2remove(model_dir):
@@ -277,8 +242,14 @@ if __name__ == "__main__":
     if conf.round == 0:
         for arg in vars(conf):
             print(arg, getattr(conf, arg))
-
     train_with_conf(conf)
+
+
+
+
+
+
+
 
 
 

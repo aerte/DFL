@@ -185,13 +185,16 @@ def train_with_conf(conf):
         content["server_loss"] = []
         content["server_accu"] = []
 
+    seed_use = np.random.randint(0, 100000, 1)[0]
+    conf.random_state = np.random.RandomState(seed_use)
+
     tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
 
     print("GPU availability", torch.cuda.is_available())
 
-    seed_use = np.random.randint(0, 100000, 1)[0]
-    conf.random_state = np.random.RandomState(seed_use)
+    #seed_use = np.random.randint(0, 100000, 1)[0]
+    #conf.random_state = np.random.RandomState(seed_use)
 
     print("The used learning rate", conf.lr)
     print("The seed", seed_use)
@@ -228,7 +231,7 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf)
+                tt_loss, tt_accu = run_server(conf, model_path)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
@@ -251,6 +254,7 @@ def train_with_conf(conf):
     # df = pd.DataFrame(preds)
     name = "client%02d.csv" % conf.use_local_id
     savetxt(model_path + name, preds, delimiter=',')
+    ####
 
     del exist_model
     del _model

@@ -196,7 +196,7 @@ def train_with_conf(conf):
         mnist_utils.seed_everything(seed_use)
 
     model_path = model_dir + "/communication_round_%03d/" % conf.round
-    data_mom = "../data" + "/communication_round_%03d/" % conf.round
+    data_mom = "../data/version%02d/communication_round_%03d/" % (conf.version, conf.round)
 
     if not os.path.exists(data_mom):
         os.makedirs(data_mom)

@@ -23,7 +23,7 @@ echo -e "Working dir: $(pwd)\n"
 lr_group="0.1"
 n_clients=10
 split=iid
-local_epoch=10
+local_epoch=5
 method=check_zeta
 non_iid_alpha=0.1
 dataset=cifar10

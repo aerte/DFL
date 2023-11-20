@@ -218,7 +218,7 @@ def train_with_conf(conf):
                        exist_model, model_path)
 
     #### Predictions and saving them
-    _, _, preds, _ = check_test_accuracy(_model)
+    _, _, preds, _ = check_test_accuracy(_model, conf)
     #df = pd.DataFrame(preds)
     name = "client%02d.csv" % conf.use_local_id
     savetxt(model_path+name, preds, delimiter=',')

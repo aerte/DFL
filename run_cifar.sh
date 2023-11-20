@@ -18,6 +18,7 @@ echo "Node: $(hostname)"
 echo "Start: $(date +%F-%R:%S)"
 echo -e "Working dir: $(pwd)\n"
 
+# https://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@github.com/aerte/DFL.git
 
 lr_group="0.1"
 n_clients=10

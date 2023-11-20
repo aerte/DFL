@@ -102,14 +102,6 @@ def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
     train_obj = Train(conf, [tr_loader, tt_loader], conf.num_local_epochs, conf.sigma, exist_model)
     client_model = train_obj.run()
 
-    #### Predictions and saving them
-    _, _, preds, _ = check_test_accuracy(client_model)
-    #df = pd.DataFrame(preds)
-    name = "client%02d.csv" % conf.use_local_id
-    savetxt(model_path+name, preds, delimiter=',')
-
-    ####
-
     print("Done Local ID %02d" % conf.use_local_id)
     torch.save(client_model,
                conf.model_dir + "/client_id_%02d.pt" % conf.use_local_id)
@@ -174,9 +166,6 @@ def check_test_accuracy(model_checkpoints, conf):
 
 
 def train_with_conf(conf):
-    seed_use = np.random.randint(0, 100000, 1)[0]
-    conf.random_state = np.random.RandomState(seed_use)
-
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
@@ -197,6 +186,9 @@ def train_with_conf(conf):
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
 
     print("GPU availability", torch.cuda.is_available())
+
+    seed_use = np.random.randint(0, 100000, 1)[0]
+    conf.random_state = np.random.RandomState(seed_use)
 
     print("The used learning rate", conf.lr)
     print("The seed", seed_use)
@@ -224,6 +216,12 @@ def train_with_conf(conf):
     time_init = time.time()
     _model = run_train(conf, tr_loader, tt_loader,
                        exist_model, model_path)
+
+    #### Predictions and saving them
+    _, _, preds, _ = check_test_accuracy(_model)
+    #df = pd.DataFrame(preds)
+    name = "client%02d.csv" % conf.use_local_id
+    savetxt(model_path+name, preds, delimiter=',')
 
     ### TEST AND SAVE CLIENT MODEL HEREs
 

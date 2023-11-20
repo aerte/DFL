@@ -185,16 +185,13 @@ def train_with_conf(conf):
         content["server_loss"] = []
         content["server_accu"] = []
 
-    seed_use = np.random.randint(0, 100000, 1)[0]
-    conf.random_state = np.random.RandomState(seed_use)
-
     tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
 
     print("GPU availability", torch.cuda.is_available())
 
-    #seed_use = np.random.randint(0, 100000, 1)[0]
-    #conf.random_state = np.random.RandomState(seed_use)
+    seed_use = np.random.randint(0, 100000, 1)[0]
+    conf.random_state = np.random.RandomState(seed_use)
 
     print("The used learning rate", conf.lr)
     print("The seed", seed_use)

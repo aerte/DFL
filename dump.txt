@@ -1,4 +1,4 @@
-  wandb.init(
+wandb.init(
         # set the wandb project where this run will be logged
         project="test-run-cifar_Version%01d" % conf.version,
 
@@ -12,3 +12,10 @@
 
                 wandb.log({'server_loss': tt_loss})
                 wandb.log({'server_accuracy': tt_accu})
+
+
+The code runs by running the train_eff for every client in every round, so code that records the
+data has to evaluate the data and save it in a specific round
+
+Save prediction in run_train
+save server in

@@ -124,7 +124,10 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, _ , taf = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, preds , taf = check_test_accuracy(model_group, conf)
+
+    ### SAVE SERVER PREDICTIONS HERE
+
     print("time on the server", time.time() - time_init)
 
 
@@ -212,6 +215,8 @@ def train_with_conf(conf):
     _model = run_train(conf, tr_loader, tt_loader,
                        exist_model)
 
+    ### TEST AND SAVE CLIENT MODEL HEREs
+
     print("finish training model time", time.time() - time_init)
 
     while True:
@@ -236,7 +241,7 @@ def train_with_conf(conf):
     if conf.round >= 4 and conf.use_local_id == 0:
         path2remove(model_dir + "/communication_round_%03d/" % (conf.round - 4))
 
-    return content["server_loss"], content["server_accu"]
+    #return content["server_loss"], content["server_accu"]
 
 
 def path2remove(model_dir):
@@ -256,20 +261,7 @@ if __name__ == "__main__":
         for arg in vars(conf):
             print(arg, getattr(conf, arg))
 
-    wandb.init(
-        # set the wandb project where this run will be logged
-        project="test-run-cifar_Version%01d" % conf.version,
-
-        # track hyperparameters and run metadata
-        config={
-            "rounds": 5,
-            "dataset": "CIFAR"
-        }
-    )
-    loss, accu = train_with_conf(conf)
-
-    wandb.log({'server_loss': loss}, {'steps':np.arange(conf.num_rounds)})
-    wandb.log({'server_accuracy': accu}, {'steps':np.arange(conf.num_rounds)})
+    train_with_conf(conf)
 
 
 

@@ -40,6 +40,7 @@ num3=6
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
 wandb login 2ceadd0580b10f2a10e2eaf5b14e25d184ec914c
+python init.py
 
 for s_lr in $lr_group
 do

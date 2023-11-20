@@ -108,7 +108,7 @@ def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
     return client_model
 
 
-def run_server(conf):
+def run_server(conf, model_path):
     time_init = time.time()
     model_group = {}
     dir2load = conf.model_dir
@@ -126,7 +126,10 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, preds , taf = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, _ , taf = check_test_accuracy(model_group, conf)
+
+    # df = pd.DataFrame(taf)
+    savetxt(model_path + "taf.csv", taf, delimiter=',')
 
     ### SAVE SERVER PREDICTIONS HERE
 
@@ -217,14 +220,6 @@ def train_with_conf(conf):
     _model = run_train(conf, tr_loader, tt_loader,
                        exist_model, model_path)
 
-    #### Predictions and saving them
-    _, _, preds, _ = check_test_accuracy(_model, conf)
-    #df = pd.DataFrame(preds)
-    name = "client%02d.csv" % conf.use_local_id
-    savetxt(model_path+name, preds, delimiter=',')
-
-    ### TEST AND SAVE CLIENT MODEL HEREs
-
     print("finish training model time", time.time() - time_init)
 
     while True:
@@ -233,7 +228,7 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu, _, taf = run_server(conf)
+                tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
@@ -241,9 +236,6 @@ def train_with_conf(conf):
 
                 wandb.log({'server_loss': tt_loss})
                 wandb.log({'server_accuracy': tt_accu})
-
-                #df = pd.DataFrame(taf)
-                savetxt(model_path+"taf.csv", taf, delimiter=',')
 
                 ####
 
@@ -253,6 +245,12 @@ def train_with_conf(conf):
                 break
             else:
                 break
+
+    #### Predictions and saving them
+    _, _, preds, _ = check_test_accuracy(_model, conf)
+    # df = pd.DataFrame(preds)
+    name = "client%02d.csv" % conf.use_local_id
+    savetxt(model_path + name, preds, delimiter=',')
 
     del exist_model
     del _model

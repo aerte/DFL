@@ -32,8 +32,8 @@ version=2
 num_rounds=10
 sigma=0
 start_round=0
-start_client=1
-end_client=10
+start_client=0
+end_client=9
 
 num2=3
 num3=6

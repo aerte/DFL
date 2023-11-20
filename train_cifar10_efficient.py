@@ -238,7 +238,7 @@ def train_with_conf(conf):
                 break
 
     _, _, preds, _ = check_test_accuracy(_model, conf)
-    savetxt(model_path + "client%02d.csv" % conf.use_local_id, taf, delimiter=',')
+    savetxt(model_path + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
 
 
     del exist_model

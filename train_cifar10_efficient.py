@@ -166,9 +166,6 @@ def check_test_accuracy(model_checkpoints, conf):
 def train_with_conf(conf):
     model_mom = "../exp_data/"
 
-    if not os.path.exists(data_mom):
-        os.makedirs(data_mom)
-
     conf.folder_name = "cifar10"
     conf.dir_name = "version_0"
 

@@ -14,6 +14,7 @@ import time
 import configs
 import pickle
 import get_subset_cifar10 as gsc
+from numpy import savetxt
 
 device = torch.device("cuda")
 
@@ -123,9 +124,10 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, _, taf = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
-    return tt_loss, tt_accu
+
+    return tt_loss, tt_accu, taf
 
 
 def check_test_accuracy(model_checkpoints, conf):
@@ -135,7 +137,12 @@ def check_test_accuracy(model_checkpoints, conf):
     model_use.load_state_dict(model_checkpoints)
     loss, accu = 0.0, 0.0
     num_class = 10
+
+    ####
     preds = np.zeros([len(tt_loader) * 1000, num_class])
+    taf = np.zeros([len(tt_loader) * 1000, 2])
+    ####
+
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)
         _pred = model_use(_im)
@@ -143,13 +150,18 @@ def check_test_accuracy(model_checkpoints, conf):
         _accu = (_pred.argmax(axis=-1) == _la).sum()
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
+
+        ####
         preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000, 0] = _la.detach().cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000, 1] = _pred.argmax(axis=-1).detach().cpu().numpy()
+        ####
+
     print("The shape of the prediction", np.shape(preds))
     loss = loss / len(tt_loader)
     accu = accu / len(tt_loader) / 1000
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
-    return loss, accu
-
+    return loss, accu, preds, taf
 
 def train_with_conf(conf):
     model_mom = "../exp_data/"
@@ -211,9 +223,12 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf)
+                tt_loss, tt_accu, taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
+
+                savetxt(model_path+"loss_accu.csv", np.array[tt_loss, tt_accu],delimiter=',')
+                savetxt(model_path+"taf.csv", taf,delimiter=',')
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
@@ -221,6 +236,11 @@ def train_with_conf(conf):
                 break
             else:
                 break
+
+    _, _, preds, _ = check_test_accuracy(_model, conf)
+    savetxt(model_path + "client%02d.csv" % conf.use_local_id, taf, delimiter=',')
+
+
     del exist_model
     del _model
     if conf.round >= 4 and conf.use_local_id == 0:

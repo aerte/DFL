@@ -232,7 +232,7 @@ def train_with_conf(conf):
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
-                savetxt(data_mom+"loss_accu.csv", np.array[tt_loss, tt_accu],delimiter=',')
+                savetxt(data_mom+"loss_accu.csv", np.array([tt_loss, tt_accu]),delimiter=',')
                 savetxt(data_mom+"taf.csv", taf,delimiter=',')
 
                 with open(stat_use, "wb") as f:

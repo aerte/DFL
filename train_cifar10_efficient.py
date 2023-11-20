@@ -166,6 +166,9 @@ def check_test_accuracy(model_checkpoints, conf):
 def train_with_conf(conf):
     model_mom = "../exp_data/"
 
+    if not os.path.exists(data_mom):
+        os.makedirs(data_mom)
+
     conf.folder_name = "cifar10"
     conf.dir_name = "version_0"
 
@@ -196,6 +199,11 @@ def train_with_conf(conf):
         mnist_utils.seed_everything(seed_use)
 
     model_path = model_dir + "/communication_round_%03d/" % conf.round
+    data_mom = "../data/" + "/communication_round_%03d/" % conf.round
+
+    if not os.path.exists(data_mom):
+        os.makedirs(data_mom)
+
     if conf.use_local_id == 0:
         if not os.path.exists(model_path):
             os.makedirs(model_path)
@@ -227,8 +235,8 @@ def train_with_conf(conf):
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
-                savetxt(model_path+"loss_accu.csv", np.array[tt_loss, tt_accu],delimiter=',')
-                savetxt(model_path+"taf.csv", taf,delimiter=',')
+                savetxt(data_mom+"loss_accu.csv", np.array[tt_loss, tt_accu],delimiter=',')
+                savetxt(data_mom+"taf.csv", taf,delimiter=',')
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
@@ -238,7 +246,7 @@ def train_with_conf(conf):
                 break
 
     _, _, preds, _ = check_test_accuracy(_model, conf)
-    savetxt(model_path + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
+    savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
 
 
     del exist_model

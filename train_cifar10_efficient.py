@@ -15,6 +15,7 @@ import configs
 import pickle
 import get_subset_cifar10 as gsc
 import wandb
+import pandas as pd
 
 device = torch.device("cuda")
 
@@ -88,7 +89,7 @@ class Train(object):
         return self.model_use.state_dict()
 
 
-def run_train(conf, tr_loader, tt_loader, exist_model):
+def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
     """
     model_dir: ../exp_data/../communication_round_%02d/
     """
@@ -100,6 +101,15 @@ def run_train(conf, tr_loader, tt_loader, exist_model):
 
     train_obj = Train(conf, [tr_loader, tt_loader], conf.num_local_epochs, conf.sigma, exist_model)
     client_model = train_obj.run()
+
+    #### Predictions and saving them
+    _, _, preds, _ = check_test_accuracy(client_model)
+    df = pd.DataFrame(preds)
+    name = "client%02d.csv" % conf.use_local_id
+    df.to_csv(model_path+name, index=False)
+
+    ####
+
     print("Done Local ID %02d" % conf.use_local_id)
     torch.save(client_model,
                conf.model_dir + "/client_id_%02d.pt" % conf.use_local_id)
@@ -153,8 +163,8 @@ def check_test_accuracy(model_checkpoints, conf):
         loss += _loss.detach().cpu().numpy()
         accu += _accu.detach().cpu().numpy()
         preds[i * 1000:(i + 1) * 1000] = _pred.detach().cpu().numpy()
-        taf[i * 1000:(i + 1) * 1000,0] = _la.detach.cpu().numpy()
-        taf[i * 1000:(i + 1) * 1000, 1] = _pred.argmax(axis=-1).detach.cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000,0] = _la.detach().cpu().numpy()
+        taf[i * 1000:(i + 1) * 1000, 1] = _pred.argmax(axis=-1).detach().cpu().numpy()
 
     print("The shape of the prediction", np.shape(preds))
     loss = loss / len(tt_loader)
@@ -167,7 +177,7 @@ def train_with_conf(conf):
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_0"
+    conf.dir_name = "version_%02d" % conf.version
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
@@ -213,7 +223,7 @@ def train_with_conf(conf):
             return []
     time_init = time.time()
     _model = run_train(conf, tr_loader, tt_loader,
-                       exist_model)
+                       exist_model, model_path)
 
     ### TEST AND SAVE CLIENT MODEL HEREs
 
@@ -225,9 +235,19 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu = run_server(conf)
+                tt_loss, tt_accu, _, taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
+
+                #### Logging Data and recording labels + server prediction
+
+                wandb.log({'server_loss': tt_loss})
+                wandb.log({'server_accuracy': tt_accu})
+
+                df = pd.DataFrame(taf)
+                df.to_csv(model_path+"taf.csv", index=False)
+
+                ####
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)

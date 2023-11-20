@@ -14,6 +14,7 @@ import time
 import configs
 import pickle
 import get_subset_cifar10 as gsc
+import wandb
 
 device = torch.device("cuda")
 
@@ -214,6 +215,14 @@ def train_with_conf(conf):
                 tt_loss, tt_accu = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
+
+                #### Logging Data and recording labels + server prediction
+
+                wandb.log({'server_loss': tt_loss})
+                wandb.log({'server_accuracy': tt_accu})
+
+                ####
+
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
                 print("Finish getting the server model at round", conf.round)

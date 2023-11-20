@@ -174,6 +174,9 @@ def check_test_accuracy(model_checkpoints, conf):
 
 
 def train_with_conf(conf):
+    seed_use = np.random.randint(0, 100000, 1)[0]
+    conf.random_state = np.random.RandomState(seed_use)
+
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
@@ -194,9 +197,6 @@ def train_with_conf(conf):
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
 
     print("GPU availability", torch.cuda.is_available())
-
-    seed_use = np.random.randint(0, 100000, 1)[0]
-    conf.random_state = np.random.RandomState(seed_use)
 
     print("The used learning rate", conf.lr)
     print("The seed", seed_use)

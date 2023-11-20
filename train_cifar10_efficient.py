@@ -15,7 +15,7 @@ import configs
 import pickle
 import get_subset_cifar10 as gsc
 import wandb
-import pandas as pd
+from numpy import savetxt
 
 device = torch.device("cuda")
 
@@ -104,9 +104,9 @@ def run_train(conf, tr_loader, tt_loader, exist_model, model_path):
 
     #### Predictions and saving them
     _, _, preds, _ = check_test_accuracy(client_model)
-    df = pd.DataFrame(preds)
+    #df = pd.DataFrame(preds)
     name = "client%02d.csv" % conf.use_local_id
-    df.to_csv(model_path+name, index=False)
+    savetxt(model_path+name, preds, delimiter=',')
 
     ####
 
@@ -244,8 +244,8 @@ def train_with_conf(conf):
                 wandb.log({'server_loss': tt_loss})
                 wandb.log({'server_accuracy': tt_accu})
 
-                df = pd.DataFrame(taf)
-                df.to_csv(model_path+"taf.csv", index=False)
+                #df = pd.DataFrame(taf)
+                savetxt(model_path+"taf.csv", taf, delimiter=',')
 
                 ####
 

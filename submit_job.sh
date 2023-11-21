@@ -1,7 +1,7 @@
 #!/bin/sh
 ### General options
 ### –- specify queue --
-#BSUB -q gpuv100
+#::BSUB -q gpuv100
 ### -- set the job Name --
 #BSUB -J cifar10_2
 ### -- ask for number of cores (default: 1) --
@@ -12,6 +12,7 @@
 #BSUB -W 3:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
+#BSUB -R "select[sxm2]"
 ### -- set the email address --
 # please uncomment the following line and put in your e-mail address,
 # if you want to receive e-mail notifications on a non-default address

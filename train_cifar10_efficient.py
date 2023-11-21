@@ -242,8 +242,9 @@ def train_with_conf(conf):
             else:
                 break
 
-    _, _, preds, _ = check_test_accuracy(_model, conf)
-    savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
+    if (conf.round % 5 == 0) or (conf.round == 0):
+        _, _, preds, _ = check_test_accuracy(_model, conf)
+        savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
 
 
     del exist_model

@@ -12,7 +12,6 @@
 #BSUB -W 3:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
-#BSUB -R "select[sxm2]"
 ### -- set the email address --
 # please uncomment the following line and put in your e-mail address,
 # if you want to receive e-mail notifications on a non-default address
@@ -26,6 +25,7 @@
 # -- end of LSF options --
 
 nvidia-smi
+module load cuda/11.6
 module load scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17
 source ../torch_dl/bin/activate
 

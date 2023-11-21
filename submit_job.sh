@@ -5,7 +5,7 @@
 ### -- set the job Name --
 #BSUB -J cifar10_2
 ### -- ask for number of cores (default: 1) --
-#BSUB -n 10
+#BSUB -n 4
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now

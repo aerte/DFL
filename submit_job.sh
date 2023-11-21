@@ -1,15 +1,15 @@
 #!/bin/sh
 ### General options
 ### –- specify queue --
-#BSUB -q gpua100
+#BSUB -q gpuv100
 ### -- set the job Name --
-#BSUB -J cifar10
+#BSUB -J cifar10_2
 ### -- ask for number of cores (default: 1) --
-#BSUB -n 1
+#BSUB -n 10
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 1:30
+#BSUB -W 3:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
 ### -- set the email address --
@@ -20,8 +20,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -oo cifar.out
-#BSUB -eo cifar.err
+#BSUB -oo cifar1.out
+#BSUB -eo cifar1.err
 # -- end of LSF options --
 
 nvidia-smi

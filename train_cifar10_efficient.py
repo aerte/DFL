@@ -250,7 +250,7 @@ def train_with_conf(conf):
     del exist_model
     del _model
     if conf.round >= 4 and conf.use_local_id == 0:
-        path2remove(model_dir + "communication_round_%03d/" % (conf.round - 4))
+        path2remove(model_dir + "/communication_round_%03d/" % (conf.round - 4))
 
 
 def path2remove(model_dir):

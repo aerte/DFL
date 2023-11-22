@@ -37,7 +37,7 @@ end_client=9
 
 # num2=1
 # num3=6
-# gpu_index=1
+gpu_index=1
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 

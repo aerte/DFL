@@ -26,3 +26,6 @@ save server in
                 wandb.log({'server_accuracy': tt_accu})
 
                 ####
+
+
+The process runs with 2 gpus?? Can it run on 1?

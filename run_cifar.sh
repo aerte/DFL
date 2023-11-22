@@ -35,8 +35,9 @@ start_round=0
 start_client=0
 end_client=9
 
-num2=3
+# num2=1
 # num3=6
+gpu_index = 1
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
@@ -50,11 +51,11 @@ do
     do
         for i in $(seq "$start_client" 1 "$end_client")
         do
-            if [ "$i" -lt "$num2" ]; then
-                gpu_index=0
-            elif [ "$i" -ge "$num2" ] && [ "$i" -lt "$num3" ]; then
-                gpu_index=3
-            fi
+            #if [ "$i" -lt "$num2" ]; then
+            #    gpu_index=1
+            #elif [ "$i" -ge "$num2" ] && [ "$i" -lt "$num3" ]; then
+            #    gpu_index=3
+            #fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"
             python train_cifar10_efficient.py --n_clients "$n_clients" --split "$split" --sigma "$sigma" --num_local_epochs "$local_epoch" \

@@ -59,7 +59,7 @@ def verify_implementation():
     return ce_numpy, ce_torch
 
 
-def get_subset_images(train_images, train_label, num_select, save=False, tds_dir="../image_dataset/"):
+def get_subset_images(train_images, train_label, num_select, save=False, tds_dir="../../image_dataset/"):
     """Prepare the subset of mnist
     train_dataset = prepare_mnist.get_dataset(conf, "mnist", "../image_dataset/", split="train")
     test_dataset = prepare_mnist.get_dataset(conf, "mnist", "../image_dataset/", split="test")

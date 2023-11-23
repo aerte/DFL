@@ -315,12 +315,12 @@ def create_dir(conf):
 
 def create_cifar10_dir(conf):
     model_mom = "../exp_data/"
-    model_dir = model_mom + "/cifar10/version_0/"
+    model_dir = model_mom + "/cifar10/version_0_%02d_/" % conf.version
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_0"
+    conf.dir_name = "version_0_%02d_" % conf.version
     return conf
 
 

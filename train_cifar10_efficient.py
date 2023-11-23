@@ -167,7 +167,7 @@ def train_with_conf(conf):
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_0"
+    conf.dir_name = "version_alpha_%03d_" % conf.non_iid_alpha
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
@@ -242,9 +242,9 @@ def train_with_conf(conf):
             else:
                 break
 
-    if (conf.round % 5 == 0) or (conf.round == 0):
-        _, _, preds, _ = check_test_accuracy(_model, conf)
-        savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
+
+    _, _, preds, _ = check_test_accuracy(_model, conf)
+    savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
 
 
     del exist_model

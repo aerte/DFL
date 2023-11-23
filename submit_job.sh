@@ -20,8 +20,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -oo %J.out
-#BSUB -eo %J.err
+#BSUB -o cifar_%J.out
+#BSUB -e cifar_%J.err
 # -- end of LSF options --
 
 nvidia-smi

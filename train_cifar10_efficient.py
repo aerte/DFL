@@ -167,7 +167,7 @@ def train_with_conf(conf):
     model_mom = "../exp_data/"
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_alpha_%03d_" % conf.non_iid_alpha
+    conf.dir_name = "version_1"
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 

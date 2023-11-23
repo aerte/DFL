@@ -171,9 +171,6 @@ def train_with_conf(conf):
 
     model_dir = model_mom + "%s/%s/" % (conf.folder_name, conf.dir_name)
 
-    seed_use = np.random.randint(0, 100000, 1)[0]
-    conf.random_state = np.random.RandomState(seed_use)
-
     stat_use = model_dir + "/stat.obj"
     if os.path.exists(stat_use):
         if conf.use_local_id == 0:
@@ -188,8 +185,8 @@ def train_with_conf(conf):
 
     print("GPU availability", torch.cuda.is_available())
 
-    #seed_use = np.random.randint(0, 100000, 1)[0]
-    #conf.random_state = np.random.RandomState(seed_use)
+    seed_use = np.random.randint(0, 100000, 1)[0]
+    conf.random_state = np.random.RandomState(seed_use)
 
     print("The used learning rate", conf.lr)
     print("The seed", seed_use)

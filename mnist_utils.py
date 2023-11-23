@@ -59,7 +59,7 @@ def verify_implementation():
     return ce_numpy, ce_torch
 
 
-def get_subset_images(train_images, train_label, num_select, save=False, tds_dir="../../image_dataset/"):
+def get_subset_images(train_images, train_label, num_select, save=False, tds_dir="../image_dataset/"):
     """Prepare the subset of mnist
     train_dataset = prepare_mnist.get_dataset(conf, "mnist", "../image_dataset/", split="train")
     test_dataset = prepare_mnist.get_dataset(conf, "mnist", "../image_dataset/", split="test")
@@ -269,7 +269,7 @@ class CNNModel(nn.Module):
 
 
 def initial_model(conf):
-    model = create_model(conf).to(torch.device("cuda"))
+    model = create_model(conf).to(torch.device("cpu"))
     model_param = {}
     for name, p in model.named_parameters():
         model_param[name] = p
@@ -307,8 +307,8 @@ def define_optimizer(model, lr=None):
 
 
 def create_dir(conf):
-    model_mom = "SOME NAME"
-    model_dir = model_mom + "SOME NAME"
+    model_mom = "../exp_data_MNIST/"
+    model_dir = model_mom + "version_0"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 

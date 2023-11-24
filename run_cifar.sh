@@ -28,11 +28,11 @@ non_iid_alpha=100
 dataset=cifar10
 model_type=m_cnn
 version=10
-num_rounds=1
+num_rounds=80
 sigma=0
 start_round=0
 start_client=0
-end_client=2
+end_client=9
 
 num2=3
 num3=6

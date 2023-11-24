@@ -16,7 +16,7 @@ import pickle
 import get_subset_cifar10 as gsc
 from numpy import savetxt
 
-device = torch.device("cuda")
+device = torch.device("cpu")
 
 
 class Train(object):

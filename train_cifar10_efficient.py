@@ -199,7 +199,7 @@ def train_with_conf(conf):
     data_mom = "../data/version%02d/communication_round_%03d/" % (conf.version, conf.round)
 
     if not os.path.exists(data_mom):
-        os.makedirs(data_mom)
+        os.makedirs(data_mom, exist_ok=True)
 
     if conf.use_local_id == 0:
         if not os.path.exists(model_path):

@@ -227,7 +227,7 @@ def train_with_conf(conf):
                    range(conf.n_clients)]) == conf.n_clients:
 
             if conf.use_local_id == 0:
-                time.sleep(10)
+                #time.sleep(10)
                 tt_loss, tt_accu, taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)

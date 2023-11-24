@@ -34,9 +34,9 @@ start_round=0
 start_client=0
 end_client=9
 
-num2 = 5
+num2=5
 
-echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
+# echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
 for s_lr in $lr_group
 do

@@ -1,13 +1,13 @@
 #!/bin/sh
 ### General options
 ### –- specify queue --
-#BSUB -q gpua100
+#BSUB -q gpuv100
 ### -- set the job Name --
 #BSUB -J cifar10
 ### -- ask for number of cores (default: 1) --
-#BSUB -n 4
+#BSUB -n 8
 ### -- Select the resources: 1 gpu in exclusive process mode --
-#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -gpu "num=2:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
 #BSUB -W 2:00
 # request 5GB of system-memory

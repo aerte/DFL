@@ -31,3 +31,11 @@ save server in
 The process runs with 2 gpus?? Can it run on 1?
 
 https://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@github.com/aerte/DFL.git
+
+if [ "$i" -lt "$num2" ]; then
+                gpu_index=1
+            elif [ "$i" -ge "$num2" ] && [ "$i" -lt "$num3" ]; then
+                gpu_index=2
+            fi
+            echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
+            export CUDA_VISIBLE_DEVICES="$gpu_index"

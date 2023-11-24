@@ -40,8 +40,6 @@ num3=6
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
-export CUDA_LAUNCH_BLOCKING=1
-
 for s_lr in $lr_group
 do
     python mnist_utils.py --n_clients "$n_clients" --split "$split" --sigma "$sigma" --num_local_epochs "$local_epoch" \

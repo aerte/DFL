@@ -18,7 +18,6 @@ echo "Node: $(hostname)"
 echo "Start: $(date +%F-%R:%S)"
 echo -e "Working dir: $(pwd)\n"
 
-# https://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@github.com/aerte/DFL.git
 
 lr_group="0.1"
 n_clients=10
@@ -28,12 +27,12 @@ method=check_zeta
 non_iid_alpha=100
 dataset=cifar10
 model_type=m_cnn
-version=9
-num_rounds=80
+version=10
+num_rounds=1
 sigma=0
 start_round=0
 start_client=0
-end_client=9
+end_client=2
 
 num2=3
 num3=6
@@ -56,7 +55,7 @@ do
                 gpu_index=0
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
-            export CUDA_VISIBLE_DEVICES=":$gpu_index"
+            export CUDA_VISIBLE_DEVICES="$gpu_index"
             python train_cifar10_efficient.py --n_clients "$n_clients" --split "$split" --sigma "$sigma" --num_local_epochs "$local_epoch" \
                 --method "$method" --version "$version" --lr "$s_lr" \
                 --num_rounds "$num_rounds" --use_local_id "$i" --dataset "$dataset" --opt client \

@@ -9,7 +9,7 @@
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 3:00
+#BSUB -W 2:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
 ### -- set the email address --
@@ -25,7 +25,7 @@
 # -- end of LSF options --
 
 nvidia-smi
-module load cuda/11.6 scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17
+module load scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17
 source ../torch_dl/bin/activate
 
 ./run_cifar.sh

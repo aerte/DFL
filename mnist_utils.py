@@ -207,7 +207,6 @@ def get_dataloader(im, label, shuffle=True, batch_size=None):
 
 
 def create_model(conf):
-    print("MODEL THAT IS BEING USED: "+conf.model_type)
     num_input = 28 * 28 if conf.dataset == "mnist" else 3 * 32 * 32
     num_class = 10
     num_channel = 1 if conf.dataset == "mnist" else 3
@@ -307,20 +306,20 @@ def define_optimizer(model, lr=None):
 
 
 def create_dir(conf):
-    model_mom = "../exp_data_MNIST/"
-    model_dir = model_mom + "version_0"
+    model_mom = "SOME NAME"
+    model_dir = model_mom + "SOME NAME"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
 
 def create_cifar10_dir(conf):
     model_mom = "../exp_data/"
-    model_dir = model_mom + "/cifar10/version_0_%02d_/" % conf.version
+    model_dir = model_mom + "/cifar10/version_1/"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_0_%02d_" % conf.version
+    conf.dir_name = "version_1"
     return conf
 
 
@@ -333,3 +332,16 @@ if __name__ == "__main__":
         seed_use = np.random.randint(0, 100000, 1)[0]
         conf.random_state = np.random.RandomState(seed_use)
         tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -49,7 +49,7 @@ do
         for i in $(seq "$start_client" 1 "$end_client")
         do
             if [ "$i" -lt "$num2" ]; then
-                gpu_index=2
+                gpu_index=3
             elif [ "$i" -ge "$num2" ]; then
                 gpu_index=3
             fi

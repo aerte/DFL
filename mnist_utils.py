@@ -217,6 +217,8 @@ def create_model(conf):
         model_use = CLSMultiLayerModel(num_input)
     elif conf.model_type == "m_cnn":
         model_use = CNNModel(num_channel)
+    elif conf.model_type == "m_vgg":
+        model_use = VGGModel(num_channel)
     return model_use
 
 
@@ -255,6 +257,33 @@ class CNNModel(nn.Module):
             nn.MaxPool2d(2),
             nn.ReLU(True),
             nn.Conv2d(32, 64, kernel_size=5),
+            nn.MaxPool2d(2),
+            nn.ReLU(True))
+        self.cls_layer = nn.Sequential(
+            nn.Linear(num_feat, 512),
+            nn.ReLU(True),
+            nn.Linear(512, 10))
+
+    def forward(self, x):
+        feat = self.layer(x)
+        out = self.cls_layer(feat.view(len(x), self.num_feat))
+        return out
+
+class VGGModel(nn.Module):
+    # Inspiration from  https://machinelearningmastery.com/how-to-develop-a-cnn-from-scratch-for-cifar-10-photo-classification/
+    def __init__(self, num_channel):
+        super(CNNModel, self).__init__()
+        num_feat = 64 * 5 * 5 if num_channel == 3 else 1024
+        self.num_feat = num_feat
+        self.layer = nn.Sequential(
+            nn.Conv2d(num_channel, 32, kernel_size=5),
+            nn.ReLU(True),
+            nn.Conv2d(num_channel, 32, kernel_size=5,padding='same'),
+            nn.MaxPool2d(2),
+            nn.ReLU(True),
+            nn.Conv2d(32, 64, kernel_size=5),
+            nn.ReLU(True),
+            nn.Conv2d(64, 64, kernel_size=5, padding='same'),
             nn.MaxPool2d(2),
             nn.ReLU(True))
         self.cls_layer = nn.Sequential(

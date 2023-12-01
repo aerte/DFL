@@ -78,6 +78,7 @@ def build_non_iid_by_dirichlet(random_state, indices2targets, non_iid_alpha, num
     num_indices: the length of the indices2targets
     n_workers: number of clients
     """
+
     n_auxi_worker = 2 if num_classes == 102 else 10  # 10 #n_workers n_auxi_worker = 20 when non_iid_alpha = 0.1, n_clients=40
     random_state.shuffle(indices2targets)  # shuffle along the row-dimension
 
@@ -103,7 +104,7 @@ def build_non_iid_by_dirichlet(random_state, indices2targets, non_iid_alpha, num
         while min_size < int(0.5 * s_target_size / s_n_worker):
             _idx_batch = [[] for _ in range(s_n_worker)]
             for s_class in range(num_classes):
-                # print("class ", s_class)
+                print("class ", s_class)
                 map_orig_class_index = np.where(s_target[:, 1] == s_class)[0]
                 idx_class = s_target[map_orig_class_index, 0]
                 try:
@@ -122,7 +123,7 @@ def build_non_iid_by_dirichlet(random_state, indices2targets, non_iid_alpha, num
                         _idx_batch[batch_idx] = s_batch
                     sizes = [len(s_batch) for s_batch in _idx_batch]
                     min_size = np.min(sizes)
-                    # print("class label ", s_class, " minimum size", min_size)
+                    print("class label ", s_class, " minimum size", min_size)
                 except ZeroDivisionError:
                     pass
         idx_batch += _idx_batch
@@ -221,3 +222,8 @@ class DataPartitioner(object):
 
     def use(self, partition_id):
         return Partition(self.data, self.partitions[partition_id])
+
+
+
+
+

@@ -65,3 +65,5 @@ if [ "$i" -lt "$num2" ]; then
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"
+
+Plot the class distribution as a histogram for one class

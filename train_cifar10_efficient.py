@@ -124,10 +124,10 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
-    tt_loss, tt_accu, _, taf = check_test_accuracy(model_group, conf)
+    tt_loss, tt_accu, preds, taf = check_test_accuracy(model_group, conf)
     print("time on the server", time.time() - time_init)
 
-    return tt_loss, tt_accu, taf
+    return tt_loss, tt_accu, preds, taf
 
 
 def check_test_accuracy(model_checkpoints, conf):
@@ -228,12 +228,13 @@ def train_with_conf(conf):
 
             if conf.use_local_id == 0:
                 time.sleep(10)
-                tt_loss, tt_accu, taf = run_server(conf)
+                tt_loss, tt_accu, preds, taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
                 savetxt(data_mom+"loss_accu.csv", np.array([tt_loss, tt_accu]),delimiter=',')
                 savetxt(data_mom+"taf.csv", taf,delimiter=',')
+                savetxt(data_mom+"server_pred.csv", preds, delimiter=',')
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)

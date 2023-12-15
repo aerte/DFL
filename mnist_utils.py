@@ -277,7 +277,7 @@ class VGG16(nn.Module):
         num_feat = 64 * 5 * 5 if num_channel == 3 else 1024
         self.num_feat = num_feat
 
-        self.vgg16 = models.vgg16(weights='DEFAULT')
+        self.vgg16 = models.vgg16(weights='DEFAULT', )
 
         for param in self.vgg16.features.parameters():
             param.requires_grad = False

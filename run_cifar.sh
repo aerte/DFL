@@ -33,6 +33,7 @@ sigma=0
 start_round=0
 start_client=0
 end_client=9
+batch_size=16
 
 num2=5
 
@@ -56,7 +57,7 @@ do
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"
             python train_cifar10_efficient.py --n_clients "$n_clients" --split "$split" --sigma "$sigma" --num_local_epochs "$local_epoch" \
-                --method "$method" --version "$version" --lr "$s_lr" \
+                --batch_size "$batch_size" --method "$method" --version "$version" --lr "$s_lr" \
                 --num_rounds "$num_rounds" --use_local_id "$i" --dataset "$dataset" --opt client \
                 --model_type "$model_type" --non_iid_alpha "$non_iid_alpha" --start_round "$start_round" --round "$round" &
         done

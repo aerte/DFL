@@ -51,7 +51,7 @@ do
             if [ "$i" -lt "$num2" ]; then
                 gpu_index=1
             elif [ "$i" -ge "$num2" ]; then
-                gpu_index=3
+                gpu_index=2
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"

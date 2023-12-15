@@ -343,12 +343,12 @@ class VGG16(nn.Module):
         )
 
     def forward(self, x):
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-        x = self.layer5(x)
-        out = self.classifier(x)
+        feat = self.layer1(x)
+        feat = self.layer2(feat)
+        feat = self.layer3(feat)
+        feat = self.layer4(feat)
+        feat = self.layer5(feat)
+        out = self.classifier(feat.view(len(x), 16384))
         return out
 
 

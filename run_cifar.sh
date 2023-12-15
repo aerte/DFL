@@ -27,13 +27,13 @@ method=check_zeta
 non_iid_alpha=1000
 dataset=cifar10
 model_type=m_vgg
-version=20
+version=21
 num_rounds=80
 sigma=0
 start_round=0
 start_client=0
 end_client=9
-batch_size=16
+batch_size=32
 
 num2=5
 

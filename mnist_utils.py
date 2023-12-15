@@ -348,7 +348,8 @@ class VGG16(nn.Module):
         feat = self.layer3(feat)
         feat = self.layer4(feat)
         feat = self.layer5(feat)
-        out = self.classifier(feat.view(len(x), 16384))
+        feat = feat.reshape(feat.size(0), -1)
+        out = self.classifier(feat)
         return out
 
 

@@ -39,8 +39,8 @@ class Train(object):
 
         # Asserting that the classifier actually trains
 
-        #parameter_list = [p for p in self.model_use.parameters() if p.requires_grad == False]
-        #assert len(parameter_list) == 0
+        parameter_list = [p for p in self.model_use.parameters() if p.requires_grad == False]
+        assert len(parameter_list) == 0
 
     def get_grad(self):
         grad_group = []

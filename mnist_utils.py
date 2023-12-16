@@ -14,7 +14,6 @@ import random
 import os
 import configs
 import get_subset_cifar10 as gsc
-import torchvision.models as models
 
 mnist_path = "../image_dataset/"
 device = torch.device("cuda")

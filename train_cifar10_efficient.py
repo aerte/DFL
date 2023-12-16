@@ -60,7 +60,7 @@ class Train(object):
         _loss.backward()
         self.optimizer.step()
         accu = (_pred.argmax(axis=-1) == _label).sum().div(len(_image))
-        print("Training loss: {:.4f} and Training accuracy {:.2f}".format(_loss.item(), accu.item()))
+        #print("Training loss: {:.4f} and Training accuracy {:.2f}".format(_loss.item(), accu.item()))
         return self.get_grad()
 
     def _eval(self, global_step, data_use, str_use):
@@ -293,8 +293,8 @@ def train_with_conf(conf):
                 ####
 
                 #### We validate the server on the training set ####
-                content["server_loss_train"].append(tr_loss)
-                content["server_accu_train"].append(tr_accu)
+                content["server_train_loss"].append(tr_loss)
+                content["server_train_accu"].append(tr_accu)
 
                 savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
                 savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')

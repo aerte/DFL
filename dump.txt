@@ -9,7 +9,7 @@ version_2 = iid with 1000
 version_3 = non iid with 0.1
 
 23 - local 1 iid
-24 - local 20 iid
+25 - local 20 iid
 
 
 https://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@github.com/aerte/DFL.git

@@ -3,8 +3,15 @@ lr  = 0.1
 no momentum
 no weight decay
 
+########################
+
 version_2 = iid with 1000
 version_3 = non iid with 0.1
+
+23 - local 1 iid
+
+
+########################
 
 alpha = 0.1, 100 and 1000
 100 and 1000 are approximately iid

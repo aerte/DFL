@@ -22,12 +22,12 @@ echo -e "Working dir: $(pwd)\n"
 lr_group="0.1"
 n_clients=10
 split=non_iid
-local_epoch=10
+local_epoch=1
 method=check_zeta
 non_iid_alpha=1000
 dataset=cifar10
-model_type=m_vgg
-version=22
+model_type=m_cnn
+version=23
 num_rounds=80
 sigma=0
 start_round=0

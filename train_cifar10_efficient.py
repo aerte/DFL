@@ -60,7 +60,7 @@ class Train(object):
         _loss.backward()
         self.optimizer.step()
         accu = (_pred.argmax(axis=-1) == _label).sum().div(len(_image))
-        # print("Training loss: {:.4f} and Training accuracy {:.2f}".format(_loss.item(), accu.item()))
+        print("Training loss: {:.4f} and Training accuracy {:.2f}".format(_loss.item(), accu.item()))
         return self.get_grad()
 
     def _eval(self, global_step, data_use, str_use):
@@ -126,13 +126,58 @@ def run_server(conf):
             for k in _model_param.keys():
                 model_group[k] += _model_param[k] * (1 / conf.n_clients)
     torch.save(model_group, dir2load + "/aggregated_model.pt")
+    # Validation on Test Set
     tt_loss, tt_accu, preds, taf = check_test_accuracy(model_group, conf)
+    # Checking the overconfidence on the Training Set
+    tr_loss, tr_accu, tr_preds, tr_taf = test_server_on_training(model_group, conf)
+
     print("time on the server", time.time() - time_init)
 
-    return tt_loss, tt_accu, preds, taf
+    # Testing the server on the training data to test for overconfidence
+
+    return tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf
+
+def test_server_on_training(model_checkpoints, conf):
+    print('########## Test Server on Training Data ############')
+
+    tt_loader = gsc.get_cifar10_dataset(conf)
+
+    model_use = mnist_utils.create_model(conf).to(device)
+    model_use.load_state_dict(model_checkpoints)
+    loss, accu = 0.0, 0.0
+    num_class = 10
+
+    batch_size = conf.batch_size
+
+    preds = np.zeros([len(tt_loader) * batch_size, num_class])
+    taf = np.zeros([len(tt_loader) * batch_size, 2])
+
+    for i, (_im, _la) in enumerate(tt_loader):
+        _im, _la = _im.to(device), _la.to(device)
+        _pred = model_use(_im)
+        _loss = nn.CrossEntropyLoss(reduction='sum')(_pred, _la) / len(_im)
+        _accu = (_pred.argmax(axis=-1) == _la).sum()
+        loss += _loss.detach().cpu().numpy()
+        accu += _accu.detach().cpu().numpy()
+
+        ####
+        preds[i * batch_size:(i + 1) * batch_size] = _pred.detach().cpu().numpy()
+        taf[i * batch_size:(i + 1) * batch_size, 0] = _la.detach().cpu().numpy()
+        taf[i * batch_size:(i + 1) * batch_size, 1] = _pred.argmax(axis=-1).detach().cpu().numpy()
+        ####
+
+    #print("The shape of the prediction", np.shape(preds))
+    loss = loss / len(tt_loader)
+    accu = accu / len(tt_loader) / batch_size
+    print("Server model TRAINING SET loss: %.4f and accuracy: %.4f" % (loss, accu))
+    print('####################################################')
+    return loss, accu, preds, taf
+
+
 
 
 def check_test_accuracy(model_checkpoints, conf):
+
     tt_loader = gsc.get_cifar10_test_dataset(1000)
 
     model_use = mnist_utils.create_model(conf).to(device)
@@ -165,6 +210,9 @@ def check_test_accuracy(model_checkpoints, conf):
     print("Server model loss: %.4f and accuracy: %.4f" % (loss, accu))
     return loss, accu, preds, taf
 
+
+
+
 def train_with_conf(conf):
     model_mom = "../exp_data/"
 
@@ -181,6 +229,9 @@ def train_with_conf(conf):
         content = {}
         content["server_loss"] = []
         content["server_accu"] = []
+
+        content["server_train_loss"] = []
+        content["server_train_accu"] = []
 
     tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
@@ -229,14 +280,26 @@ def train_with_conf(conf):
                    range(conf.n_clients)]) == conf.n_clients:
 
             if conf.use_local_id == 0:
-                time.sleep(15)
-                tt_loss, tt_accu, preds, taf = run_server(conf)
+                time.sleep(10)
+
+                #### We validate the server on the test set ####
+                tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
                 savetxt(data_mom+"loss_accu.csv", np.array([tt_loss, tt_accu]),delimiter=',')
                 savetxt(data_mom+"taf.csv", taf,delimiter=',')
                 savetxt(data_mom+"server_pred.csv", preds, delimiter=',')
+                ####
+
+                #### We validate the server on the training set ####
+                content["server_loss_train"].append(tr_loss)
+                content["server_accu_train"].append(tr_accu)
+
+                savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
+                savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')
+                savetxt(data_mom + "server_pred.csv", tr_preds, delimiter=',')
+
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)
@@ -246,8 +309,8 @@ def train_with_conf(conf):
                 break
 
 
-    _, _, preds, _ = check_test_accuracy(_model, conf)
-    savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
+   # _, _, preds, _ = check_test_accuracy(_model, conf)
+   # savetxt(data_mom + "client%02d.csv" % conf.use_local_id, preds, delimiter=',')
 
 
     del exist_model

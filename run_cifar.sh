@@ -33,7 +33,7 @@ sigma=0
 start_round=0
 start_client=0
 end_client=9
-batch_size=25
+batch_size=32
 
 num2=5
 

@@ -230,8 +230,8 @@ def train_with_conf(conf):
         content["server_loss"] = []
         content["server_accu"] = []
 
-        content["server_train_loss"] = []
-        content["server_train_accu"] = []
+        #content["server_train_loss"] = []
+        #content["server_train_accu"] = []
 
     tr_loader = gsc.get_cifar10_dataset(conf, transform_apply=True)
     tt_loader = gsc.get_cifar10_test_dataset(conf.batch_size)
@@ -293,13 +293,14 @@ def train_with_conf(conf):
                 ####
 
                 #### We validate the server on the training set ####
-                content["server_train_loss"].append(tr_loss)
-                content["server_train_accu"].append(tr_accu)
+                #content["server_train_loss"].append(tr_loss)
+                #content["server_train_accu"].append(tr_accu)
 
                 savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
                 savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')
                 savetxt(data_mom + "server_pred.csv", tr_preds, delimiter=',')
 
+                print('SUCCESSFUL ROUND')
 
                 with open(stat_use, "wb") as f:
                     pickle.dump(content, f)

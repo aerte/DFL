@@ -8,13 +8,15 @@ no weight decay
 version_2 = iid with 1000
 version_3 = non iid with 0.1
 
-23 - local 1 iid
-25 - local 20 iid
-27 - local 1 non-iid
-29 - local 20 non-iid
+31 - local 1 iid
+35 - local 20 iid
+33 - local 1 non-iid
+31 - local 20 non-iid
 
 
 https://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@github.com/aerte/DFL.git
+module load cuda/11.7 scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-python-3.9.17
+source ../torch_dl/bin/activate
 
 ########################
 

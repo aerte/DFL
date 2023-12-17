@@ -298,7 +298,7 @@ def train_with_conf(conf):
 
                 savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
                 savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')
-                savetxt(data_mom + "server_pred.csv", tr_preds, delimiter=',')
+                savetxt(data_mom + "server_pred_train.csv", tr_preds, delimiter=',')
 
                 print('SUCCESSFUL ROUND')
 

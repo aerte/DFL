@@ -3,6 +3,10 @@ lr  = 0.1
 no momentum
 no weight decay
 
+#######################
+
+Test for tonight: delete the gpu identifier in run_cifar
+
 ########################
 
 version_2 = iid with 1000

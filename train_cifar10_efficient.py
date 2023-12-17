@@ -280,7 +280,7 @@ def train_with_conf(conf):
                    range(conf.n_clients)]) == conf.n_clients:
 
             if conf.use_local_id == 0:
-                time.sleep(20)
+                time.sleep(5)
 
                 #### We validate the server on the test set ####
                 tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf = run_server(conf)

@@ -3,7 +3,7 @@
 '''
 @File    :   train.py
 @Time    :   2023/03/05 16:14:14
-@Author  :   Bo
+@Author  :   Bo (+ adapted by Felix)
 '''
 import mnist_utils as mnist_utils
 import numpy as np

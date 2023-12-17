@@ -3,7 +3,7 @@
 '''
 @File    :   utils.py
 @Time    :   2023/03/05 15:26:47
-@Author  :   Bo
+@Author  :   Bo (+ adapted by Felix)
 '''
 import numpy as np
 from scipy.special import softmax
@@ -271,7 +271,7 @@ class CNNModel(nn.Module):
 
 class VGG16(nn.Module):
     # Inspiration from https://blog.paperspace.com/vgg-from-scratch-pytorch/
-    # VGG11 (D): https://arxiv.org/pdf/1409.1556.pdf
+    # VGG11 (A): https://arxiv.org/pdf/1409.1556.pdf
     def __init__(self, num_channel):
         super(VGG16, self).__init__()
         num_feat = 64 * 5 * 5 if num_channel == 3 else 1024

@@ -8,7 +8,7 @@ no weight decay
 version_2 = iid with 1000
 version_3 = non iid with 0.1
 
-39 - local 10 iid
+39 - local 10 iid (Only up till round 68 but still usable)
 
 37 - local 1 iid
 35 - local 20 iid

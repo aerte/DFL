@@ -16,7 +16,7 @@ import configs
 import get_subset_cifar10 as gsc
 
 mnist_path = "../image_dataset/"
-device = torch.device("cuda")
+device = torch.device("cpu")
 
 
 def get_mnist_transform():

@@ -35,9 +35,10 @@ start_client=0
 end_client=9
 batch_size=32
 
-num2=5
+num2=3
+num3=6
 
-echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
+# echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
 for s_lr in $lr_group
 do
@@ -56,9 +57,8 @@ do
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"
-
             python train_cifar10_efficient.py --n_clients "$n_clients" --split "$split" --sigma "$sigma" --num_local_epochs "$local_epoch" \
-                --batch_size "$batch_size" --method "$method" --version "$version" --lr "$s_lr" \
+                --method "$method" --version "$version" --lr "$s_lr" \
                 --num_rounds "$num_rounds" --use_local_id "$i" --dataset "$dataset" --opt client \
                 --model_type "$model_type" --non_iid_alpha "$non_iid_alpha" --start_round "$start_round" --round "$round" &
         done

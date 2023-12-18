@@ -12,6 +12,8 @@ Test for tonight: delete the gpu identifier in run_cifar
 version_2 = iid with 1000
 version_3 = non iid with 0.1
 
+47 - local 10 non-iid cnn
+43 - local 10 non-iid vgg
 41 - local 10 non-iid vgg
 
 

@@ -27,7 +27,7 @@ method=check_zeta
 non_iid_alpha=0.1
 dataset=cifar10
 model_type=m_vgg
-version=41
+version=43
 num_rounds=80
 sigma=0
 start_round=0
@@ -49,7 +49,7 @@ do
     do
         for i in $(seq "$start_client" 1 "$end_client")
         do
-          if [ "$i" -lt "$num2" ]; then
+            if [ "$i" -lt "$num2" ]; then
                 gpu_index=2
             elif [ "$i" -ge "$num2" ] && [ "$i" -lt "$num3" ]; then
                 gpu_index=3

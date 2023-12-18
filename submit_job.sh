@@ -7,9 +7,9 @@
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 4
 ### -- Select the resources: 1 gpu in exclusive process mode --
-#BSUB -gpu "num=1:mode=exclusive_process"
+#BSUB -gpu "num=1:mode=exclusive_process:mps=yes"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 5:00
+#BSUB -W 6:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=24GB]"
 ### -- set the email address --
@@ -29,3 +29,5 @@ module load cuda/11.7 scipy/1.10.1-python-3.9.17 matplotlib/3.7.1-numpy-1.24.3-p
 source ../torch_dl/bin/activate
 
 ./run_cifar.sh
+
+

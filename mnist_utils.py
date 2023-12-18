@@ -26,7 +26,6 @@ def get_mnist_transform():
     transform = transforms.Compose([transforms.ToTensor()] + ([normalize] if normalize is not None else []))
     return transform
 
-
 def get_one_hot(ylabel, n_class):
     y_label_one_hot = np.zeros([len(ylabel), n_class])
     for i, s_la in enumerate(ylabel):
@@ -384,12 +383,12 @@ def create_dir(conf):
 
 def create_cifar10_dir(conf):
     model_mom = "../exp_data/"
-    model_dir = model_mom + "/cifar10/version_3/"
+    model_dir = model_mom + "/cifar10/version_2/"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_3"
+    conf.dir_name = "version_2"
     return conf
 
 

@@ -35,8 +35,7 @@ start_client=0
 end_client=9
 batch_size=32
 
-num2=3
-num3=6
+num2=5
 
 # echo ${SLURM_STEP_GPUS:-$SLURM_JOB_GPUS}
 
@@ -52,7 +51,7 @@ do
         do
             if [ "$i" -lt "$num2" ]; then
                 gpu_index=2
-            elif [ "$i" -ge "$num2" ] && [ "$i" -lt "$num3" ]; then
+            elif [ "$i" -ge "$num2" ]; then
                 gpu_index=3
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"

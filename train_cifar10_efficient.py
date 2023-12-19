@@ -140,7 +140,7 @@ def run_server(conf):
 def test_server_on_training(model_checkpoints, conf):
     print('########## Test Server on Training Data ############')
 
-    tt_loader = gsc.get_cifar10_dataset(conf)
+    tt_loader = gsc.get_cifar10_dataset_server(conf)
 
     model_use = mnist_utils.create_model(conf).to(device)
     model_use.load_state_dict(model_checkpoints)
@@ -151,6 +151,8 @@ def test_server_on_training(model_checkpoints, conf):
 
     preds = np.zeros([len(tt_loader) * batch_size, num_class])
     taf = np.zeros([len(tt_loader) * batch_size, 2])
+
+    print("---------Prediction shape: ", preds.shape)
 
     for i, (_im, _la) in enumerate(tt_loader):
         _im, _la = _im.to(device), _la.to(device)

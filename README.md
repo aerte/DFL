@@ -13,7 +13,7 @@ To run it on HPC, first clone the repository:
 git clone https://github.com/aerte/DFL.git
 ```
 
-Then create a virtual environment called`torch_dl` or change the`source` in the job script `submit_job` to your desired
+Then create a virtual environment called `torch_dl` or change the `source` in the job script `submit_job` to your desired
 environment.
 
 Then just submit the job via:
@@ -23,4 +23,4 @@ bsub < submit_job.sh
 ```
 
 All the relevant settings like the number of local epochs, alpha or what type of model to use (MLP,CNN or VGG11) can be 
-changed in`run_cifar.sh`.
+changed in `run_cifar.sh`.

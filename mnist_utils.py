@@ -383,12 +383,12 @@ def create_dir(conf):
 
 def create_cifar10_dir(conf):
     model_mom = "../exp_data/"
-    model_dir = model_mom + "/cifar10/version_4/"
+    model_dir = model_mom + "/cifar10/version_3/"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
     conf.folder_name = "cifar10"
-    conf.dir_name = "version_4"
+    conf.dir_name = "version_3"
     return conf
 
 

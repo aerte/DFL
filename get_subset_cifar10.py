@@ -162,6 +162,9 @@ def get_cifar10_dataset(conf, transform_apply=True):
     return data_loader
 
 def get_cifar10_dataset_server(conf, transform_apply=True):
+    """
+    Returns: The whole data set to find the server model accuracy on the training set
+    """
     train_loader = get_cifar("cifar10", split="train", transform_apply=transform_apply)
     print("-----fetching dataset for train-test-------")
     shuffle = False if not transform_apply else True

@@ -128,14 +128,14 @@ def run_server(conf):
     torch.save(model_group, dir2load + "/aggregated_model.pt")
     # Validation on Test Set
     tt_loss, tt_accu, preds, taf = check_test_accuracy(model_group, conf)
-    # Checking the overconfidence on the Training Set
-    tr_loss, tr_accu, tr_preds, tr_taf = test_server_on_training(model_group, conf)
+    ####### Checking the overconfidence on the Training Set #######
+    # tr_loss, tr_accu, tr_preds, tr_taf = test_server_on_training(model_group, conf)
 
     print("time on the server", time.time() - time_init)
 
     # Testing the server on the training data to test for overconfidence
 
-    return tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf
+    return tt_loss, tt_accu, preds, taf#, tr_loss, tr_accu, tr_preds, tr_taf
 
 def test_server_on_training(model_checkpoints, conf):
     print('########## Test Server on Training Data ############')
@@ -282,10 +282,11 @@ def train_with_conf(conf):
                    range(conf.n_clients)]) == conf.n_clients:
 
             if conf.use_local_id == 0:
-                time.sleep(20)
+                time.sleep(10)
 
                 #### We validate the server on the test set ####
-                tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf = run_server(conf)
+                tt_loss, tt_accu, preds, taf = run_server(conf)
+                #tt_loss, tt_accu, preds, taf, tr_loss, tr_accu, tr_preds, tr_taf = run_server(conf)
                 content["server_loss"].append(tt_loss)
                 content["server_accu"].append(tt_accu)
 
@@ -298,10 +299,10 @@ def train_with_conf(conf):
                 #content["server_train_loss"].append(tr_loss)
                 #content["server_train_accu"].append(tr_accu)
 
-                savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
-                savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')
+                #savetxt(data_mom + "loss_accu_train.csv", np.array([tr_loss, tr_accu]), delimiter=',')
+                #savetxt(data_mom + "taf_train.csv", tr_taf, delimiter=',')
                 #savetxt(data_mom + "server_pred_train.csv", tr_preds, delimiter=',')
-                time.sleep(10)
+                time.sleep(5)
 
                 print('SUCCESSFUL ROUND')
 

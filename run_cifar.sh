@@ -27,7 +27,7 @@ method=check_zeta
 non_iid_alpha=1000
 dataset=cifar10
 model_type=m_vgg
-version=65
+version=69
 num_rounds=85
 sigma=0
 start_round=0
@@ -50,9 +50,9 @@ do
         for i in $(seq "$start_client" 1 "$end_client")
         do
             if [ "$i" -lt "$num2" ]; then
-                gpu_index=0
+                gpu_index=1
             elif [ "$i" -ge "$num2" ]; then
-                gpu_index=0
+                gpu_index=1
             fi
             echo "|GPU INDEX|CLIENT INDEX|${gpu_index}|${i}"
             export CUDA_VISIBLE_DEVICES="$gpu_index"

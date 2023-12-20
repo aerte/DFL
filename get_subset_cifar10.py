@@ -162,9 +162,8 @@ def get_cifar10_dataset(conf, transform_apply=True):
     return data_loader
 
 def get_cifar10_dataset_server(conf, transform_apply=True):
-    train_dataset = get_cifar("cifar10", split="train", transform_apply=transform_apply)
+    train_loader = get_cifar("cifar10", split="train", transform_apply=transform_apply)
     print("-----fetching dataset for train-test-------")
-    train_loader = define_train_dataset(conf.use_local_id, 1, train_dataset, conf)
     shuffle = False if not transform_apply else True
     data_loader = torch.utils.data.DataLoader(train_loader,
                                               batch_size=conf.batch_size,

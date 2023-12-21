@@ -1,4 +1,4 @@
-All code used for Model training was provided by Bo Li and adapted by us.
+All code used for Federated Learning Model training was provided by Bo Li and adapted by us.
 
 Requirements:
 - torch

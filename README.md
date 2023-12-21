@@ -25,5 +25,8 @@ bsub < submit_job.sh
 All the relevant settings like the number of local epochs, alpha or what type of model to use (MLP,CNN or VGG11) can be 
 changed in `run_cifar.sh`.
 
+Specifically for the MNIST part of our report, please refer to `MNIST-train` which contains the corresponding code. This
+notebook can be run like any notebook locally or on Colab for example.
+
 For post-processing of the results we used the three notebooks `DataBinning`, `DataPlots` and `ExamplePlots`. Please
 refer to the notebooks and our report for insight into how the uncertainty estimation was conducted.
